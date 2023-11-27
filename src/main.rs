@@ -74,22 +74,22 @@ fn main() {
         (Complex::from_polar(0.0, 0.0), Complex::from_polar(1.0, 0.0)),
         (
             Complex::from_polar(0.7, 0.0),
-            Complex::from_polar(1.221, -0.61),
+            Complex::from_polar(1.0, 0.0) + Complex::from_polar(0.7, HALF_PI),
         ),
         (
             Complex::from_polar(0.7, 0.0),
             Complex::from_polar(0.7, HALF_PI),
         ),
         (
-            Complex::from_polar(1.0, PI / 4.0),
-            Complex::from_polar(1.0, -3.0 * (PI / 4.0)),
+            Complex::from_polar(0.7, 0.0) + Complex::from_polar(0.7, 0.0 - HALF_PI),
+            Complex::from_polar(0.7, HALF_PI) + Complex::from_polar(0.7, PI),
         ),
         (
             Complex::from_polar(0.7, 0.0 - HALF_PI),
             Complex::from_polar(0.7, PI),
         ),
         (
-            Complex::from_polar(1.221, 0.612),
+            Complex::from_polar(0.7, 0.0 - HALF_PI) + Complex::from_polar(1.0, 0.0),
             Complex::from_polar(0.7, -1.0 * PI),
         ),
         (Complex::from_polar(1.0, 0.0), Complex::from_polar(0.0, 0.0)),
