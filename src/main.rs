@@ -157,11 +157,17 @@ impl ToneGenerator {
 
         let mut right_total_window = vec![Complex::new(0.0, 0.0); self.window_size];
         right_total_window[1] = right_total_tone;
-        right_total_window[self.window_size - 1] = right_total_tone;
+        right_total_window[self.window_size - 1] = Complex {
+            re: right_total_tone.re,
+            im: -1.0 * right_total_tone.im
+        };
 
         let mut left_total_window = vec![Complex::new(0.0, 0.0); self.window_size];
         left_total_window[1] = left_total_tone;
-        left_total_window[self.window_size - 1] = left_total_tone;
+        left_total_window[self.window_size - 1] = Complex {
+            re: left_total_tone.re,
+            im: -1.0 * left_total_tone.im
+        };
 
         (left_total_window, right_total_window)
     }
