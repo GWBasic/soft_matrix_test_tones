@@ -75,6 +75,34 @@ fn main() {
 
     // sq
     tone_generator.write_all_tones(
+        Path::new("default.wav"),
+        (Complex::from_polar(1.0, 0.0), Complex::from_polar(1.0, 0.0)),
+        (Complex::from_polar(0.0, 0.0), Complex::from_polar(1.0, 0.0)),
+        (
+            Complex::from_polar(0.1, HALF_PI),
+            Complex::from_polar(1.0, 0.0),
+        ),
+        (
+            Complex::from_polar(0.1, PI),
+            Complex::from_polar(1.0, 0.0),
+        ),
+        (
+            Complex::from_polar(1.0, PI),
+            Complex::from_polar(1.0, 0.0),
+        ),
+        (
+            Complex::from_polar(1.0, PI),
+            Complex::from_polar(0.1, 0.0),
+        ),
+        (
+            Complex::from_polar(1.0, PI),
+            Complex::from_polar(1.0, HALF_PI),
+        ),
+        (Complex::from_polar(1.0, 0.0), Complex::from_polar(0.0, 0.0)),
+    );
+
+    // sq
+    tone_generator.write_all_tones(
         Path::new("sq.wav"),
         (Complex::from_polar(1.0, 0.0), Complex::from_polar(1.0, 0.0)),
         (Complex::from_polar(0.0, 0.0), Complex::from_polar(1.0, 0.0)),
@@ -115,6 +143,8 @@ impl ToneGenerator {
         left_middle: (Complex<f32>, Complex<f32>),
         left_front: (Complex<f32>, Complex<f32>),
     ) {
+        self.sample_ctr = 0;
+
         let outfile = write_wav_to_file_path(path, self.header).unwrap();
         let mut writer = outfile.get_random_access_f32_writer().unwrap();
 
