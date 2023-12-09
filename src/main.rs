@@ -21,6 +21,7 @@ struct ToneGenerator {
     iterations_per_tone: usize,
     iterations_per_silence: usize,
     fft_inverse: Arc<dyn Fft<f32>>,
+    scale: f32,
     scratch: Vec<Complex<f32>>,
 
     sample_ctr: usize,
@@ -63,6 +64,11 @@ fn main() {
         iterations_per_tone: ITERATIONS_PER_TONE,
         iterations_per_silence: ITERATIONS_PER_SILENCE,
         fft_inverse,
+
+        // rustfft states that the scale is 1/len()
+        // See "noramlization": https://docs.rs/rustfft/latest/rustfft/#normalization
+        scale: 1.0 / (WINDOW_SIZE as f32).sqrt(),
+
         scratch,
         sample_ctr: 0,
     };
@@ -159,14 +165,14 @@ impl ToneGenerator {
         right_total_window[1] = right_total_tone;
         right_total_window[self.window_size - 1] = Complex {
             re: right_total_tone.re,
-            im: -1.0 * right_total_tone.im
+            im: -1.0 * right_total_tone.im,
         };
 
         let mut left_total_window = vec![Complex::new(0.0, 0.0); self.window_size];
         left_total_window[1] = left_total_tone;
         left_total_window[self.window_size - 1] = Complex {
             re: left_total_tone.re,
-            im: -1.0 * left_total_tone.im
+            im: -1.0 * left_total_tone.im,
         };
 
         (left_total_window, right_total_window)
@@ -186,8 +192,8 @@ impl ToneGenerator {
         for _iteration in 0..self.iterations_per_tone {
             for window_ctr in 0..self.window_size {
                 let samples_by_channel = SamplesByChannel::new()
-                    .front_left(left_total_window[window_ctr].re)
-                    .front_right(right_total_window[window_ctr].re);
+                    .front_left(self.scale * left_total_window[window_ctr].re)
+                    .front_right(self.scale * right_total_window[window_ctr].re);
 
                 writer
                     .write_samples(self.sample_ctr, samples_by_channel)
@@ -198,14 +204,10 @@ impl ToneGenerator {
         }
     }
 
-    fn write_silence(
-        &mut self,
-        writer: &mut RandomAccessWavWriter<f32>) {
+    fn write_silence(&mut self, writer: &mut RandomAccessWavWriter<f32>) {
         for _ in 0..self.iterations_per_silence {
             for _ in 0..self.window_size {
-                let samples_by_channel = SamplesByChannel::new()
-                .front_left(0.0)
-                .front_right(0.0);
+                let samples_by_channel = SamplesByChannel::new().front_left(0.0).front_right(0.0);
 
                 writer
                     .write_samples(self.sample_ctr, samples_by_channel)
