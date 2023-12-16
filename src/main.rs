@@ -73,7 +73,7 @@ fn main() {
         sample_ctr: 0,
     };
 
-    // sq
+    // default
     tone_generator.write_all_tones(
         Path::new("default.wav"),
         (Complex::from_polar(1.0, 0.0), Complex::from_polar(1.0, 0.0)),
@@ -101,6 +101,18 @@ fn main() {
         (Complex::from_polar(1.0, 0.0), Complex::from_polar(0.0, 0.0)),
     );
 
+    let (rear_center_lt, rear_center_rt) = sq_encode(
+        Complex::from_polar(0.0, 0.0),
+        Complex::from_polar(0.0, 0.0),
+        Complex::from_polar(1.0, 0.0),
+        Complex::from_polar(1.0, 0.0));
+
+    let (left_middle_lt, left_middle_rt) = sq_encode(
+        Complex::from_polar(1.0, 0.0),
+        Complex::from_polar(0.0, 0.0),
+        Complex::from_polar(1.0, 0.0),
+        Complex::from_polar(0.0, 0.0));
+    
     // sq
     tone_generator.write_all_tones(
         Path::new("sq.wav"),
@@ -118,16 +130,30 @@ fn main() {
             Complex::from_polar(0.7, 0.0) + Complex::from_polar(0.7, 0.0 - HALF_PI),
             Complex::from_polar(0.7, HALF_PI) + Complex::from_polar(0.7, PI),
         ),
-        (
-            Complex::from_polar(0.7, 0.0 - HALF_PI),
-            Complex::from_polar(0.7, PI),
-        ),
-        (
-            Complex::from_polar(0.7, 0.0 - HALF_PI) + Complex::from_polar(1.0, 0.0),
-            Complex::from_polar(0.7, -1.0 * PI),
-        ),
+        (rear_center_lt, rear_center_rt),
+        (left_middle_lt, left_middle_rt),
         (Complex::from_polar(1.0, 0.0), Complex::from_polar(0.0, 0.0)),
     );
+}
+
+fn sq_encode(
+    left_front: Complex<f32>,
+    right_front: Complex<f32>,
+    left_rear: Complex<f32>,
+    right_rear: Complex<f32>) -> (Complex<f32>, Complex<f32>) {
+
+    let (left_back_amplitude, left_back_phase) = left_rear.to_polar();
+    let (right_back_amplitude, right_back_phase) = right_rear.to_polar();
+
+    let left_back_for_left_total = Complex::from_polar(0.7 * left_back_amplitude, left_back_phase - HALF_PI);
+    let right_back_for_left_total = Complex::from_polar(0.7 * right_back_amplitude, right_back_phase);
+    let left_total = left_front + left_back_for_left_total + right_back_for_left_total;
+
+    let left_back_for_right_total = Complex::from_polar(0.7 * left_back_amplitude, left_back_phase + PI);
+    let right_back_for_right_total = Complex::from_polar(0.7 * right_back_amplitude, right_back_phase + HALF_PI);
+    let right_total = right_front + left_back_for_right_total + right_back_for_right_total;
+
+    (left_total, right_total)
 }
 
 impl ToneGenerator {
