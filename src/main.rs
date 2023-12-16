@@ -96,7 +96,7 @@ fn main() {
         ),
         (
             Complex::from_polar(1.0, PI),
-            Complex::from_polar(1.0, HALF_PI),
+            Complex::from_polar(0.1, HALF_PI),
         ),
         (Complex::from_polar(1.0, 0.0), Complex::from_polar(0.0, 0.0)),
     );
