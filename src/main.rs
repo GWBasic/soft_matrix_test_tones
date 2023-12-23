@@ -153,7 +153,7 @@ fn sq_encode(
     let right_back_for_right_total = Complex::from_polar(0.7 * right_back_amplitude, right_back_phase + HALF_PI);
     let right_total = right_front + left_back_for_right_total + right_back_for_right_total;
 
-    (left_total, right_total)
+    (left_front + left_total, right_front + right_total)
 }
 
 impl ToneGenerator {
